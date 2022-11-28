@@ -1,0 +1,4 @@
+[db]
+dbFilename = "database"
+colNames = ["id", "alias", "longDesc", "dataType", "status"]
+
