@@ -10,7 +10,7 @@ class Database():
   def _loadConfig(self) -> None:
     # Load the config settings
     with open("config.toml", "r") as f:
-      self.config = toml.load(f)
+      self.config = toml.load(f)["db"]
     
   def _saveDb(self, db) -> None:
     db.set_index("id", inplace=True)
@@ -18,37 +18,34 @@ class Database():
 
   def _confirmDbExists(self) -> None:
     # If the database doesn't exist, make it
-    self.dbFilename = self.config["db"]["dbFilename"] + ".csv"
+    self.dbFilename = self.config["dbFilename"] + ".csv"
     if not os.path.exists(self.dbFilename):
-      colNames = self.config["db"]["colNames"]
+      colNames = self.config["colNames"]
       df = pd.DataFrame(columns=colNames)
       df.set_index("id", inplace=True)
       self._saveDb(df)
 
   def _getDb(self) -> pd.DataFrame:
     # Load the database from the csv file
-    df = pd.read_csv(self.dbFilename)
+    df = pd.read_csv(self.dbFilename, na_filter=False)
     return df
 
-  def getId(self, id : int) -> pd.DataFrame:
+  def getId(self, id : str) -> pd.DataFrame:
     db = self._getDb()
-    db = db[db.index==id]
+    db = db[db.id==id]
     return db
   
-  def changeStatus(self, id : int, newStatus : str) -> pd.DataFrame:
+  def changeStatus(self, id : str, newStatus : str) -> pd.DataFrame:
     db = self._getDb()
-    db.at[id, 'status'] = newStatus
-    statusStr = ""
-    if newStatus:
-      username = db.at[int(newStatus), "longDesc"]
-      statusStr = f"Borrowed by {username}"
-    db.at[id, 'statusDesc'] = statusStr
+    # Find which row the ID is at
+    rowNo = df[df["id"] == id].index.values[0]
+    db.at[rowNo, 'status'] = newStatus
     self._saveDb(db)
-    return db[db.index == id]
+    return self.getId(id)
 
   def getPartsString(self) -> str:
     db = self._getDb()
-    partsDf = db[ db.dataType == "part"]
+    partsDf = db[ db.dataType == "equipment"]
     partsDf = partsDf[["alias","longDesc","statusDesc"]]
     parts = partsDf.values.tolist()
     retVal = []
@@ -61,10 +58,12 @@ class Database():
 
 if __name__ == "__main__":
   db = Database()
-  df = db.getId(3)
+  df = db.getId("R3")
   print(df.head())
   #print(df)
-  #df = db.changeStatus(3, "0")
-  #print(df)
+  df = db.changeStatus("R3", "R0")
+  print(df)
+  df = db.changeStatus("R3", "")
+  print(df)
   parts = db.getPartsString()
   print(parts)
