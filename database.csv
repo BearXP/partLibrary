@@ -1,5 +1,5 @@
-id,alias,longDesc,dataType,status,statusDesc
-0,zmze,Mark Evans,user,,,
-1,tca,Thomas Ansell,user,,,
-2,oscilloscope,TEK3000,part,,,
-3,multimeter,DS6000,part,1,Borrowed by user
+id,name,dataType,status
+R0,zmze,user,
+R1,tca,user,
+R2,TEK3000,equipment,R0
+R3,DS6000,equipment,
