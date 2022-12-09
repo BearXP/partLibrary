@@ -1,6 +1,7 @@
 import pandas as pd
 import os
 import toml
+import numpy as np
 
 class Database():
   def __init__(self):
@@ -46,11 +47,16 @@ class Database():
   def getPartsString(self) -> str:
     db = self._getDb()
     partsDf = db[ db.dataType == "equipment"]
-    partsDf = partsDf[["alias","longDesc","statusDesc"]]
-    parts = partsDf.values.tolist()
+    df3 = db.copy()[["id", "name"]]
+    df3.rename({"id" : "status"}, inplace=True, axis=1)
+    partsWBorrow = partsDf.join(df3.set_index('status'), on="status", rsuffix="_borrower", how="left", )
+    partsShort = partsWBorrow[["name","name_borrower"]]
+    partsShort = partsShort.replace(np.nan, '')
+    parts = partsShort.values.tolist()
     retVal = []
     for row in parts:
-      retVal.append( " | ".join(row))
+      retVal.append( f"{row[0]:<20}|{row[1]:>10}")
+      #retVal.append( " | ".join(row))
     return "\n".join(retVal)
     
     
@@ -66,4 +72,5 @@ if __name__ == "__main__":
   df = db.changeStatus("R3", "")
   print(df)
   parts = db.getPartsString()
+  print("     Equipment Name | Borrowed By")
   print(parts)
