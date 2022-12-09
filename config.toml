@@ -1,4 +1,4 @@
 [db]
 dbFilename = "database"
-colNames = ["id", "alias", "longDesc", "dataType", "status"]
+colNames = ["id", "alias", "longDesc", "dataType", "status", "statusDesc"]
 

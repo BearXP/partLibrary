@@ -1,20 +1,15 @@
 import pytermgui as ptg
+from db import Database
+
+db = Database()
 
 with ptg.WindowManager() as manager:
     window = (
         ptg.Window(
             "",
-            ptg.InputField("Balazs", prompt="Name: "),
-            ptg.InputField("Some street", prompt="Address: "),
-            ptg.InputField("+11 0 123 456", prompt="Phone number: "),
+            ptg.InputField("", prompt="Scan card to log in: "),
             "",
-            ptg.Container(
-                "Additional notes:",
-                ptg.InputField(
-                    "A whole bunch of\nMeaningful notes\nand stuff", multiline=True
-                ),
-                box="EMPTY_VERTICAL",
-            ),
+            ptg.Window("", multiline=True, box="EMPTY_VERTICAL")
             "",
             ["Submit", lambda *_: submit(manager, window)],
             width=60,

@@ -10,9 +10,11 @@ There's a better tool incoming, but for the short term I thought I could cobble 
 ## Method:
 I'll use `logZero` to keep audit logs  
 I'll use `pandas` to manage the csv database
-  - ;p;locf
 I'll use `pytermgui` as the front end.  
 
 ## To-do:
-- Get the GUI woeking
-- Made a way to modify the database
+[x] Made a way to modify the database
+[ ] Get the GUI working
+    [ ] Make a 'scan card to log in' page
+    [ ] Make a 'scan parts to borrow them, scan card to log out' page, with parts list of borrowed parts.
+    [ ] Make 'scan to log in' page show all the parts and their status
