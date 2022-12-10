@@ -1,5 +1,11 @@
 id,name,dataType,status
-R0,zmze,user,
-R1,tca,user,
-R2,TEK3000,equipment,R0
-R3,DS6000,equipment,
+U0,zmze,user,
+U1,tca,user,
+E0,TEK3000,equipment,U0
+E1,DS6000,equipment,
+E2,MM1,equipment,
+E3,Screwdriver,equipment,
+E4,Drill,equipment,U0
+E5,Soldering Iron,equipment,
+E6,Solder,equipment,
+E7,MM2,equipment,

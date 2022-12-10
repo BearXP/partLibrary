@@ -10,7 +10,9 @@ There's a better tool incoming, but for the short term I thought I could cobble 
 ## Method:
 I'll use `logZero` to keep audit logs  
 I'll use `pandas` to manage the csv database
-I'll use `pytermgui` as the front end.  
+    - Why csv? Unlike sqlite it's easy to edit using a notepad, and unlike toml or json it's obvious when data is missing.
+I'll use ~~`pytermgui`~~ `textual` as the front end. 
+    - I started with pytermgui, it seems like a really nice library, but it doesn't seem to play nice with Windows for me.
 
 ## To-do:
 [x] Made a way to modify the database
