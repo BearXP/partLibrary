@@ -1,6 +1,8 @@
+#Username {
+    margin-top: 1;
+}
 Input {
     dock: top;
-    margin-top: 1;
 }
 #body {
     grid-size: 1 1;

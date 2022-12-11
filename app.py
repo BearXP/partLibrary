@@ -17,7 +17,7 @@ class Homepage(App):
     def compose(self) -> ComposeResult:
         yield Horizontal(
             Vertical(
-                #Static("", classes="header"),
+                Static("", classes="header", id="Username"),
                 Input(placeholder="Scan your **card to borrow**, or some equipment to return"),
                 DataTable(show_cursor=False)
             )
@@ -33,11 +33,25 @@ class Homepage(App):
     def on_mount(self) -> None:
         parts = db.getParts()
         self._setTableRows(parts)
+    
+    def _clear(self) -> None:
+        self.query_one(Input).value = ""
+        dbItem = db.getId(self.LoggedInId)
+        loggedInString = ''
+        if dbItem:
+            loggedInString = f"Logged in as {dbItem['name']}"
+        self.query_one("#Username").update(loggedInString)
+        
+
 
     def on_input_submitted(self, event: Input.Submitted) -> None:
         # Lookup the ID in the database
         id = str(event.value)
         dbItem = db.getId(id)
+        # If it doesn't match anything
+        if not dbItem:
+            self._clear()
+            return
         # If it's a users ID
         if dbItem["dataType"] == 'user':
             # If they're already logged in as that user, log them out
@@ -61,7 +75,7 @@ class Homepage(App):
             else:
                 parts = db.getParts()
             self._setTableRows(parts)
-        self.query_one(Input).value = ""
+        self._clear()
         return dbItem
 
 

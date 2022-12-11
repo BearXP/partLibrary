@@ -2,6 +2,7 @@ import pandas as pd
 import os
 import toml
 import numpy as np
+import time
 
 class Database():
   def __init__(self):
@@ -45,7 +46,8 @@ class Database():
     db = self._getDb()
     # Find which row the ID is at
     rowNo = db[db["id"] == id].index.values[0]
-    db.at[rowNo, 'status'] = newStatus
+    db.at[rowNo, "status"] = newStatus
+    db.at[rowNo, "timestamp"] = time.time()
     self._saveDb(db)
     return self.getId(id)
   
@@ -86,13 +88,13 @@ class Database():
 
 if __name__ == "__main__":
   db = Database()
-  # df = db.getId("R3")
-  # print(df.head())
-  # #print(df)
-  # df = db.changeStatus("R3", "R0")
-  # print(df)
-  # df = db.changeStatus("R3", "")
-  # print(df)
+  df = db.getId("E3")
+  print(df)
+  #print(df)
+  df = db.changeStatus("E3", "U0")
+  print(df)
+  df = db.changeStatus("E3", "")
+  print(df)
   parts = db.getPartsString()
   print("     Equipment Name | Borrowed By")
   print(parts)
