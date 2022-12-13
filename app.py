@@ -14,12 +14,15 @@ db = Database()
 class Homepage(App):
     CSS_PATH = "app.css"
     LoggedInId = ""
+
     def compose(self) -> ComposeResult:
         yield Horizontal(
             Vertical(
                 Static("", classes="header", id="Username"),
-                Input(placeholder="Scan your **card to borrow**, or some equipment to return"),
-                DataTable(show_cursor=False)
+                Input(
+                    placeholder="Scan your **card to borrow**, or some equipment to return"
+                ),
+                DataTable(show_cursor=False),
             )
         )
 
@@ -33,16 +36,14 @@ class Homepage(App):
     def on_mount(self) -> None:
         parts = db.getParts()
         self._setTableRows(parts)
-    
+
     def _clear(self) -> None:
         self.query_one(Input).value = ""
         dbItem = db.getId(self.LoggedInId)
-        loggedInString = ''
+        loggedInString = ""
         if dbItem:
             loggedInString = f"Logged in as {dbItem['name']}"
         self.query_one("#Username").update(loggedInString)
-        
-
 
     def on_input_submitted(self, event: Input.Submitted) -> None:
         # Lookup the ID in the database
@@ -52,19 +53,16 @@ class Homepage(App):
         if not dbItem:
             self._clear()
             return
-        # If it's a users ID
-        if dbItem["dataType"] == 'user':
+        # If it's a user ID
+        if dbItem["dataType"] == "user":
             # If they're already logged in as that user, log them out
             if self.LoggedInId == id:
                 self.LoggedInId = ""
                 parts = db.getParts()
-                self._setTableRows(parts)
             # Log in as the user & update the screen.
             else:
                 self.LoggedInId = id
                 parts = db.getBorrowedEquipment(id)
-                self._setTableRows(parts)
-            pass
         # If it's a piece of equipment
         else:
             # Change the equipment to whoever it logged in
@@ -74,7 +72,7 @@ class Homepage(App):
                 parts = db.getBorrowedEquipment(self.LoggedInId)
             else:
                 parts = db.getParts()
-            self._setTableRows(parts)
+        self._setTableRows(parts)
         self._clear()
         return dbItem
 
