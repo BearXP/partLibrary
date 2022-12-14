@@ -1,0 +1,5 @@
+pandas
+toml
+logzero
+black
+auto-py-to-exe
