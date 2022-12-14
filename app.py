@@ -126,20 +126,18 @@ class GUI:
             # If they're already logged in as that user, log them out
             if self.LoggedInId == id:
                 self.LoggedInId = ""
-                parts = self.db.getParts()
             # Log in as the user & update the screen.
             else:
                 self.LoggedInId = id
-                parts = self.db.getBorrowedEquipment(id)
         # If it's a piece of equipment
         else:
             # Change the equipment to whoever it logged in
             self.db.changeStatus(id, self.LoggedInId)
-            # Update the list of parts shown
-            if self.LoggedInId:
-                parts = self.db.getBorrowedEquipment(self.LoggedInId)
-            else:
-                parts = self.db.getParts()
+        # Update the list of parts shown
+        if self.LoggedInId:
+            parts = self.db.getBorrowedEquipment(self.LoggedInId)
+        else:
+            parts = self.db.getParts()
         self.fillTable(parts)
         self._clear()
         return True
