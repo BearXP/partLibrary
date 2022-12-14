@@ -131,13 +131,14 @@ class GUI:
                 self.LoggedInId = id
         # If it's a piece of equipment
         else:
-            # Change the equipment to whoever it logged in
+            # Change the equipment to whoever is logged in
             self.db.changeStatus(id, self.LoggedInId)
         # Update the list of parts shown
         if self.LoggedInId:
             parts = self.db.getBorrowedEquipment(self.LoggedInId)
         else:
             parts = self.db.getParts()
+        # Update the GUI
         self.fillTable(parts)
         self._clear()
         return True
