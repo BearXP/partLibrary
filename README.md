@@ -26,10 +26,16 @@ I'll let Thomas add the rest.
     - [X] Make a 'scan card to log in' page
     - [X] Make a 'scan parts to borrow them, scan card to log out' page, with parts list of borrowed parts.
     - [X] Make 'scan to log in' page show all the parts and their status
-- [ ] Generate history logs
+- [x] Generate history logs
 - [x] Add all the users to the database
-- [x] Add all equipment to the database
-- [ ] Generate reminder emails about overdue parts.
+- [ ] Add all equipment to the database
+  - [x] Multimeters
+  - [x] Oscilloscopes
+  - [x] Power Supplies
+  - [x] Signal Generators
+  - [ ] Thermal Camera
+  - [ ] Rest
+- [x] Generate reminder emails about overdue parts.
     - Note: The Win7 PC can **NOT** be connected to the network, so it will probably need to be a think I run manually every morning.
 - [ ] Show return date (1 week from borrowed time).
 

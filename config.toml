@@ -2,3 +2,16 @@
 dbFilename = "database"
 colNames = ["id","name","dataType","status","timestamp"]
 
+[gui]
+logFilename = "logz.log"
+# LogLevel: 
+#  DEBUG = 10
+#  INFO = 20
+#  WARNING = 30
+#  ERROR = 40
+logLevel = 20
+autoLogoutTime = 20
+
+[ExternalUpdater]
+EXTERNAL_DB_LOCATION = "Z:\\database.csv"
+doneSfx = "pkmncenter.wav"

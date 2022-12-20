@@ -25,14 +25,19 @@ class Database:
         with open("config.toml", "r") as f:
             self.config = toml.load(f)["db"]
 
-    def _saveDb(self, db) -> None:
+    def _saveDb(self, db, filename: str = "") -> None:
         """
-        It takes a dataframe, sets the index to the column named "id", and then saves the dataframe to a csv
-        file
-        @param db - The dataframe to save
+        > It takes a dataframe, sets the index to the column named "id", and then saves the dataframe to a
+        csv file
+
+        :param db: The dataframe to save
+        :param filename: The name of the file to save the database to
+        :type filename: str
         """
+        if not filename:
+            filename = self.dbFilename
         db.set_index("id", inplace=True)
-        db.to_csv(self.dbFilename)
+        db.to_csv(filename)
 
     def _confirmDbExists(self) -> None:
         """
@@ -46,16 +51,18 @@ class Database:
             df.set_index("id", inplace=True)
             self._saveDb(df)
 
-    def _getDb(self) -> pd.DataFrame:
+    def _getDb(self, filename: str = "") -> pd.DataFrame:
         """
-        > Load the database from the csv file
+        `_getDb()` loads the database from the csv file
 
-        The function is a member of the class `Database` and is named `_getDb`. It returns a Pandas
-        DataFrame
-        @returns A dataframe
+        :param filename: The name of the file to load the database from
+        :type filename: str
+        :return: A dataframe
         """
+        if not filename:
+            filename = self.dbFilename
         # Load the database from the csv file
-        df = pd.read_csv(self.dbFilename, na_filter=False)
+        df = pd.read_csv(filename, na_filter=False)
         return df
 
     def getId(self, id: str) -> pd.DataFrame:
@@ -135,6 +142,39 @@ class Database:
         partsShort = partsShort.replace(np.nan, "")
         parts = partsShort.values.tolist()
         return parts
+
+    def getOverdueEquipment(self) -> list:
+        db = self._getDb()
+        equipmentDf = db[db.dataType == "equipment"]
+        borrowedEquipment = equipmentDf[equipmentDf.status != ""]
+        weekAgo = time.time() - 60 * 60 * 24 * 7
+        overdueEquipment = borrowedEquipment[
+            borrowedEquipment.timestamp.astype(float) < weekAgo
+        ]
+        return overdueEquipment.to_dict("records")
+
+    def appendDb(self, filename) -> None:
+        """
+        It reads the current database, reads the new database, combines them, removes duplicates, and saves
+        the new database
+
+        :param filename: The name of the file to be appended to the database
+        """
+        df1 = self._getDb()
+        df2 = self._getDb(filename)
+        df = pd.concat([df1, df2])
+        df = df[~df.id.duplicated(keep="first")]
+        self._saveDb(df)
+
+    def exportDb(self, filename: str) -> None:
+        """
+        > It gets the database, saves it to a file, and returns nothing
+
+        :param filename: The name of the file to export the database to
+        :type filename: str
+        """
+        db = self._getDb()
+        self._saveDb(db, filename)
 
 
 if __name__ == "__main__":
