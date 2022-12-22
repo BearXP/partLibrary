@@ -3,6 +3,7 @@ import os
 import toml
 import numpy as np
 import time
+from datetime import datetime
 
 
 class Database:
@@ -103,8 +104,21 @@ class Database:
         columns, renames the id column to status, and joins the two dataframes on the status column
         @returns A list of lists.
         """
+        def _timestampToDate(row):
+            # If it's not borrowed, ignore the timestamp
+            if not row["name_borrower"]:
+                return ""
+            # If the timestamp is blank, ignore it
+            timestamp = row["timestamp"]
+            if not timestamp:
+                return ""
+            dt_obj = datetime.fromtimestamp(float(timestamp))
+            timeStr = dt_obj.strftime('%d-%b-%Y')
+            return timeStr
+        # Get the equipment from the database
         db = self._getDb()
         partsDf = db[db.dataType == "equipment"]
+        # Make a copy of the original database and join the username of the person who borrowed the equipment
         df3 = db.copy()[["id", "name"]]
         df3.rename({"id": "status"}, inplace=True, axis=1)
         partsWBorrow = partsDf.join(
@@ -113,8 +127,10 @@ class Database:
             rsuffix="_borrower",
             how="left",
         )
-        partsShort = partsWBorrow[["name", "name_borrower"]]
-        partsShort = partsShort.replace(np.nan, "")
+        partsWBorrow = partsWBorrow.replace(np.nan, "")
+        # Get the borrowed date
+        partsWBorrow["returnDate"] = partsWBorrow.apply(lambda row: _timestampToDate(row), axis=1)
+        partsShort = partsWBorrow[["name", "name_borrower", "returnDate"]]
         parts = partsShort.values.tolist()
         return parts
 
@@ -127,21 +143,17 @@ class Database:
         @returns A list of lists. Each list contains the name of the equipment and the name of the person
         who borrowed it.
         """
+        allParts = self.getParts()
         db = self._getDb()
-        equipmentDf = db[db.dataType == "equipment"]
-        borrowed = equipmentDf[equipmentDf.status == id]
-        df3 = db.copy()[["id", "name"]]
-        df3.rename({"id": "status"}, inplace=True, axis=1)
-        partsWBorrow = borrowed.join(
-            df3.set_index("status"),
-            on="status",
-            rsuffix="_borrower",
-            how="left",
-        )
-        partsShort = partsWBorrow[["name", "name_borrower"]]
-        partsShort = partsShort.replace(np.nan, "")
-        parts = partsShort.values.tolist()
-        return parts
+        user = db[db.id == id]
+        userDict = user.to_dict('records')
+        if not userDict:
+            return []
+        firstMatchuser = userDict[0]
+        firstMatchuser["name"]
+        uName = firstMatchuser["name"]
+        borrowedParts = [part for part in allParts if part[1] == uName]
+        return borrowedParts
 
     def getOverdueEquipment(self) -> list:
         db = self._getDb()

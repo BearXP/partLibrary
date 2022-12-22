@@ -11,6 +11,7 @@ logFilename = "logz.log"
 #  ERROR = 40
 logLevel = 20
 autoLogoutTime = 20
+overdueNumDays = 7
 
 [ExternalUpdater]
 EXTERNAL_DB_LOCATION = "Z:\\database.csv"

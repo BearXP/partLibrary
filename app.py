@@ -11,6 +11,7 @@ import time
 import logzero
 import toml
 from usbUpdater import Updater
+import datetime
 
 
 class GUI:
@@ -106,44 +107,61 @@ class GUI:
         self.entry.pack()
 
     def __genTable(self):
-        ttk.Style().configure(
-            "Treeview",
-            background=self.bgColour,
-            foreground=self.textColour,
-            fieldbackground=self.bgColour,
-        )
         # scrollbar
         self.scroller = tk.Scrollbar(self.frame, orient="vertical")
         self.scroller.pack(side=tk.RIGHT, fill=tk.Y)
         self.table = ttk.Treeview(
-            self.frame, yscrollcommand=self.scroller.set, height=20
+            self.frame, yscrollcommand=self.scroller.set, height=20, show="headings"
         )
         self.table.pack()
         self.scroller.config(command=self.table.yview)
         # Define our columns
-        cols = {"ID": "ID", "Borrowed_By": "Borrowed By:"}
+        cols = {"ID": ["ID", 300], "Borrowed_By": ["Borrowed By:", 200], "borDate" : ["Borrowed Date", 100]}
         self.table["columns"] = tuple(cols.keys())
         # format our columns & headers
         self.table.column("#0", width=0, stretch=tk.NO)
         self.table.heading("#0", text="", anchor=tk.CENTER)
-        for ref, text in cols.items():
-            self.table.column(ref, anchor=tk.CENTER, width=300)
+        colWidth = 300
+        for ref, vals in cols.items():
+            text, colWidth = vals
+            self.table.column(ref, anchor=tk.CENTER, width=colWidth)
             self.table.heading(ref, text=text, anchor=tk.CENTER)
         # Add the data to the table
-        self.fillTable()
         self.table.pack()
+        self.fillTable()
 
     def fillTable(self, partsList: list = None):
         # Clear the old values:
         self.table.delete(*self.table.get_children())
         if partsList == None:
             partsList = self.db.getParts()
+        # Sort the list
         partsListSorted = sorted(partsList, key=lambda e: e[0])
         partsListSorted = sorted(partsListSorted, key=lambda e: e[1], reverse=True)
+        # Loop through each item
         for index, part in enumerate(partsListSorted):
+            # Insert the item in to the table
             self.table.insert(
-                parent="", index="end", iid=index, text="", values=tuple(part)
+                #parent="", index="end", iid=index, text="", values=tuple(part), tag=index
+                parent="", index="end", values=tuple(part), tag=index
             )
+            # Set the colour based on the date
+            if part[2]:
+                timestamp = datetime.datetime.strptime(part[2], '%d-%b-%Y')
+                #timestamp = parser.parse(part[2])
+                now = datetime.datetime.now()
+                diff = (now - timestamp).days
+            else:
+                diff = 0
+            colour = self.bgColour
+            if abs(diff) >= self.config["overdueNumDays"]:
+                colour = self.header2Colour
+            self.table.tag_configure(
+                tagname=index,
+                background=colour,
+                foreground=self.textColour
+            )
+                
 
     def _clear(self) -> None:
         self.sv.set("")

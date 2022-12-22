@@ -37,6 +37,8 @@ I'll let Thomas add the rest.
   - [ ] Rest
 - [x] Generate reminder emails about overdue parts.
     - Note: The Win7 PC can **NOT** be connected to the network, so it will probably need to be a think I run manually every morning.
+- [x] Highlight rows when they're overdue
+  - > https://stackoverflow.com/questions/62657893/ttk-treeview-set-cell-background-color-based-on-cell-value
 - [ ] Show return date (1 week from borrowed time).
 
 ## How to build
